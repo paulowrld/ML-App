@@ -26,6 +26,25 @@ class ML
         // --------------------------------------------------------------------- 
         var (trainX, trainY) = LoadDataset("bank.csv");
 
+        var positives = trainX
+            .Select((x, i) => (x, y: trainY[i][0]))
+            .Where(t => t.y == 1.0)
+            .ToList();
+
+        int factor = 5;
+        var newX = new List<double[]>(trainX);
+        var newY = new List<double[]>(trainY);
+
+        for (int f = 0; f < factor; f++)
+            foreach (var (x, y) in positives)
+            {
+                newX.Add((double[])x.Clone());
+                newY.Add(new[] { 1.0 });
+            }
+
+        trainX = newX.ToArray();
+        trainY = newY.ToArray();
+
         // ---------------------------------------------------------------------
         // 2) Normaliza features CONTÍNUAS (média 0, desvio 1) — essencial para
         //    acelerar e estabilizar o treinamento da rede.
